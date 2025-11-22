@@ -92,9 +92,8 @@ func (r *markdownRenderer) extractMermaidBlocks(source string) (string, map[stri
 	counter := 0
 
 	result := re.ReplaceAllStringFunc(source, func(match string) string {
-		// Mermaidコードを抽出
-		codeRe := regexp.MustCompile("(?s)```mermaid\\s*\\n(.*?)```")
-		matches := codeRe.FindStringSubmatch(match)
+		// Mermaidコードを抽出（外側のreを再利用）
+		matches := re.FindStringSubmatch(match)
 		if len(matches) < 2 {
 			return match
 		}
