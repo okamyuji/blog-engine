@@ -3,7 +3,9 @@ package renderer
 import (
 	"bytes"
 	"fmt"
+	htmllib "html"
 	"regexp"
+	"strings"
 
 	"github.com/yuin/goldmark"
 	"github.com/yuin/goldmark/extension"
@@ -38,6 +40,7 @@ func NewMarkdownRenderer(mermaidRenderer MermaidRenderer) MarkdownRenderer {
 		goldmark.WithRendererOptions(
 			html.WithHardWraps(), // 改行を<br>に変換
 			html.WithXHTML(),     // XHTML互換
+			// html.WithUnsafe()は使用しない（XSS対策）
 		),
 	)
 
@@ -53,24 +56,35 @@ func (r *markdownRenderer) Render(source string) (string, error) {
 		return "", nil
 	}
 
-	// Mermaidコードブロックを抽出してSVGに変換
-	processedSource, err := r.processMermaidBlocks(source)
+	// Mermaidコードブロックを一時プレースホルダーに置換してSVGを保存
+	processedSource, svgMap, err := r.extractMermaidBlocks(source)
 	if err != nil {
 		return "", fmt.Errorf("failed to process mermaid blocks: %w", err)
 	}
 
+	// Markdownをレンダリング（HTMLエスケープされる）
 	var buf bytes.Buffer
 	if err := r.md.Convert([]byte(processedSource), &buf); err != nil {
 		return "", fmt.Errorf("failed to render markdown: %w", err)
 	}
 
-	return buf.String(), nil
+	// プレースホルダーをSVGに置き換え（エスケープを解除）
+	result := buf.String()
+	for placeholder, svg := range svgMap {
+		escapedPlaceholder := htmllib.EscapeString(placeholder)
+		result = strings.ReplaceAll(result, escapedPlaceholder, svg)
+	}
+
+	return result, nil
 }
 
-// processMermaidBlocks MermaidコードブロックをSVGに変換
-func (r *markdownRenderer) processMermaidBlocks(source string) (string, error) {
+// extractMermaidBlocks MermaidコードブロックをSVGに変換してプレースホルダーに置換
+func (r *markdownRenderer) extractMermaidBlocks(source string) (string, map[string]string, error) {
 	// ```mermaid ... ``` のパターンをマッチ
 	re := regexp.MustCompile("(?s)```mermaid\\s*\\n(.*?)```")
+
+	svgMap := make(map[string]string)
+	counter := 0
 
 	result := re.ReplaceAllStringFunc(source, func(match string) string {
 		// Mermaidコードを抽出
@@ -89,8 +103,13 @@ func (r *markdownRenderer) processMermaidBlocks(source string) (string, error) {
 			return match
 		}
 
-		return svg
+		// プレースホルダーを生成
+		placeholder := fmt.Sprintf("MERMAID_SVG_PLACEHOLDER_%d", counter)
+		counter++
+		svgMap[placeholder] = svg
+
+		return placeholder
 	})
 
-	return result, nil
+	return result, svgMap, nil
 }

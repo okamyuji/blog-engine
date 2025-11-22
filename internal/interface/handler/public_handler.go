@@ -6,6 +6,7 @@ import (
 	"log"
 	"net/http"
 
+	"my-blog-engine/internal/domain/entity"
 	"my-blog-engine/internal/usecase"
 )
 
@@ -35,6 +36,12 @@ func NewPublicHandler(
 	}
 }
 
+// PostView テンプレート用の投稿ビュー
+type PostView struct {
+	*entity.Post
+	SafeHTML template.HTML
+}
+
 // Home ホームページ表示
 func (h *PublicHandler) Home(w http.ResponseWriter, r *http.Request) {
 	ctx := context.Background()
@@ -53,9 +60,18 @@ func (h *PublicHandler) Home(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// 投稿をテンプレート用に変換
+	postViews := make([]PostView, len(posts))
+	for i, post := range posts {
+		postViews[i] = PostView{
+			Post:     post,
+			SafeHTML: template.HTML(post.RenderedHTML),
+		}
+	}
+
 	data := map[string]interface{}{
 		"Title":      "Blog Home",
-		"Posts":      posts,
+		"Posts":      postViews,
 		"Categories": categories,
 	}
 

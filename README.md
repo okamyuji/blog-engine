@@ -374,45 +374,110 @@ sequenceDiagram
 
 ### エンドポイント一覧
 
-#### 認証API
+本システムは全30のRESTful APIエンドポイントを提供しており、公開API（13）、認証必須API（2）、管理API（15）に分類される。
 
-| メソッド | エンドポイント | 説明 | 認証 |
-|---------|--------------|------|-----|
-| POST | `/api/auth/login` | ログイン | 不要 |
-| POST | `/api/auth/refresh` | トークンリフレッシュ | Refresh Token |
-| POST | `/api/auth/logout` | ログアウト | Access Token |
+#### 5.1 認証API
 
-#### 公開API(認証不要)
+| メソッド | エンドポイント | 説明 | JWT認証 | 必要権限 |
+|---------|--------------|------|---------|---------|
+| POST | `/api/auth/login` | ログイン | 不要 | - |
+| POST | `/api/auth/refresh` | トークンリフレッシュ | 不要 | - |
+| POST | `/api/auth/logout` | ログアウト | 必須 | - |
+| GET | `/api/auth/me` | 現在のユーザー情報取得 | 必須 | - |
+
+#### 5.2 公開API（認証不要）
+
+- **記事エンドポイント**
+
+| メソッド | エンドポイント | 説明 | パラメータ |
+|---------|--------------|------|-----------|
+| GET | `/api/posts` | 公開記事一覧 | `limit`, `offset` |
+| GET | `/api/posts/id` | ID指定で記事取得 | `id` (必須) |
+| GET | `/api/posts/slug` | スラッグ指定で記事取得 | `slug` (必須) |
+
+- **カテゴリエンドポイント**
+
+| メソッド | エンドポイント | 説明 | パラメータ |
+|---------|--------------|------|-----------|
+| GET | `/api/categories` | カテゴリ一覧 | - |
+| GET | `/api/categories/id` | ID指定でカテゴリ取得 | `id` (必須) |
+| GET | `/api/categories/slug` | スラッグ指定でカテゴリ取得 | `slug` (必須) |
+
+- **タグエンドポイント**
+
+| メソッド | エンドポイント | 説明 | パラメータ |
+|---------|--------------|------|-----------|
+| GET | `/api/tags` | タグ一覧 | - |
+| GET | `/api/tags/id` | ID指定でタグ取得 | `id` (必須) |
+| GET | `/api/tags/slug` | スラッグ指定でタグ取得 | `slug` (必須) |
+
+- **その他**
 
 | メソッド | エンドポイント | 説明 |
 |---------|--------------|------|
-| GET | `/` | ホーム(公開記事一覧) |
-| GET | `/posts/:slug` | 記事詳細 |
-| GET | `/categories/:slug` | カテゴリ別記事一覧 |
-| GET | `/tags/:slug` | タグ別記事一覧 |
+| GET | `/` | ホームページ（公開記事一覧HTML） |
 | GET | `/health` | ヘルスチェック |
 
-#### 管理API(JWT認証必須)
+#### 5.3 管理API（JWT認証 + Admin/Editor権限必須）
 
-| メソッド | エンドポイント | 説明 | 必要ロール |
-|---------|--------------|------|----------|
-| GET | `/admin` | 管理画面ダッシュボード | admin, editor |
-| GET | `/admin/posts` | 全記事一覧(下書き含む) | admin, editor |
-| POST | `/admin/posts` | 記事作成 | admin, editor |
-| GET | `/admin/posts/:id/edit` | 記事編集画面 | admin, editor |
-| PUT | `/admin/posts/:id` | 記事更新 | admin, editor |
-| DELETE | `/admin/posts/:id` | 記事削除 | admin |
-| POST | `/admin/posts/:id/publish` | 公開/非公開切替 | admin, editor |
-| GET | `/admin/categories` | カテゴリ一覧 | admin, editor |
-| POST | `/admin/categories` | カテゴリ作成 | admin |
-| PUT | `/admin/categories/:id` | カテゴリ更新 | admin |
-| DELETE | `/admin/categories/:id` | カテゴリ削除 | admin |
-| GET | `/admin/tags` | タグ一覧 | admin, editor |
-| POST | `/admin/tags` | タグ作成 | admin, editor |
-| PUT | `/admin/tags/:id` | タグ更新 | admin |
-| DELETE | `/admin/tags/:id` | タグ削除 | admin |
+- **記事管理エンドポイント**
 
-### リクエスト/レスポンス例
+| メソッド | エンドポイント | 説明 | パラメータ | 必要権限 |
+|---------|--------------|------|-----------|---------|
+| GET | `/api/admin/posts` | 全記事一覧（下書き含む） | `limit`, `offset` | Admin, Editor |
+| POST | `/api/admin/posts` | 記事作成 | Body: JSON | Admin, Editor |
+| PUT | `/api/admin/posts` | 記事更新 | `id`, Body: JSON | Admin, Editor |
+| DELETE | `/api/admin/posts` | 記事削除 | `id` | Admin, Editor |
+| PUT | `/api/admin/posts/publish` | 記事公開 | `id` | Admin, Editor |
+| PUT | `/api/admin/posts/unpublish` | 記事非公開 | `id` | Admin, Editor |
+
+- **カテゴリ管理エンドポイント**
+
+| メソッド | エンドポイント | 説明 | パラメータ | 必要権限 |
+|---------|--------------|------|-----------|---------|
+| POST | `/api/admin/categories` | カテゴリ作成 | Body: JSON | Admin, Editor |
+| PUT | `/api/admin/categories` | カテゴリ更新 | `id`, Body: JSON | Admin, Editor |
+| DELETE | `/api/admin/categories` | カテゴリ削除 | `id` | Admin, Editor |
+
+- **タグ管理エンドポイント**
+
+| メソッド | エンドポイント | 説明 | パラメータ | 必要権限 |
+|---------|--------------|------|-----------|---------|
+| POST | `/api/admin/tags` | タグ作成 | Body: JSON | Admin, Editor |
+| PUT | `/api/admin/tags` | タグ更新 | `id`, Body: JSON | Admin, Editor |
+| DELETE | `/api/admin/tags` | タグ削除 | `id` | Admin, Editor |
+
+### 5.4 JWT認証保護状況
+
+- **保護レベル1: 公開（認証不要）**
+
+以下のエンドポイントは意図的に公開されており、JWT認証なしでアクセス可能：
+
+- すべての読み取り専用公開API（記事、カテゴリ、タグの取得）
+- ログイン、トークンリフレッシュ
+- ヘルスチェック
+
+- **保護レベル2: 認証必須**
+
+以下のエンドポイントは`authMiddleware.Authenticate()`で保護：
+
+- `/api/auth/logout` - ログアウト
+- `/api/auth/me` - ユーザー情報取得
+
+- **保護レベル3: 認証 + 権限チェック必須**
+
+以下のエンドポイントは`authMiddleware.Authenticate()`および`authMiddleware.RequireRole(Admin, Editor)`で保護：
+
+- すべての`/api/admin/*`エンドポイント（記事・カテゴリ・タグの作成/更新/削除）
+
+- **セキュリティテスト結果**
+
+- 認証なしアクセス: HTTP 401 Unauthorized（正しく拒否）
+- 無効トークン: HTTP 401 Unauthorized（正しく拒否）
+- 有効トークン: HTTP 200 OK（正常にアクセス可能）
+- セキュリティヘッダー: すべて適用済み（CSP, X-Frame-Options, HSTS等）
+
+### 5.5 リクエスト/レスポンス例
 
 #### POST /api/auth/login
 
@@ -421,7 +486,7 @@ sequenceDiagram
 ```json
 {
   "username": "admin",
-  "password": "securepassword123"
+  "password": "Admin@123"
 }
 ```
 
@@ -433,35 +498,82 @@ sequenceDiagram
   "refreshToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
   "expiresIn": 900,
   "user": {
-    "id": 1,
-    "username": "admin",
-    "email": "admin@example.com",
-    "role": "admin"
+    "ID": 1,
+    "Username": "admin",
+    "Email": "admin@blog.local",
+    "Role": "admin",
+    "Status": "active"
   }
 }
 ```
 
-**レスポンス(失敗):**
+**レスポンス(失敗 - 認証エラー):**
 
 ```json
 {
-  "error": "invalid credentials",
-  "message": "ユーザー名またはパスワードが正しくありません"
+  "error": "Unauthorized",
+  "message": "Invalid credentials",
+  "code": 401
 }
 ```
 
-#### POST /admin/posts
+#### GET /api/posts?limit=10&offset=0
 
-**リクエスト:**
+**レスポンス:**
+
+```json
+{
+  "posts": [
+    {
+      "ID": 9,
+      "Title": "Mermaid Test",
+      "Slug": "mermaid-test",
+      "Content": "# Test\n\n```mermaid\ngraph TD\n A[Start] --> B[End]\n```\n\nDone.",
+      "RenderedHTML": "<h1 id=\"test\">Test</h1>\n<p><svg>...</svg></p>\n<p>Done.</p>",
+      "Status": "published",
+      "AuthorID": 1,
+      "CategoryID": 1,
+      "PublishedAt": "2025-11-22T09:58:00Z",
+      "Author": {
+        "ID": 1,
+        "Username": "admin"
+      },
+      "Category": {
+        "ID": 1,
+        "Name": "Technology",
+        "Slug": "technology"
+      },
+      "Tags": [
+        {
+          "ID": 1,
+          "Name": "Golang",
+          "Slug": "golang"
+        }
+      ]
+    }
+  ],
+  "total": 1
+}
+```
+
+#### POST /api/admin/posts
+
+**リクエストヘッダー:**
+
+```text
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+Content-Type: application/json
+```
+
+**リクエストボディ:**
 
 ```json
 {
   "title": "Go言語でのWeb開発入門",
   "slug": "go-web-development-intro",
-  "content": "# はじめに\n\nGo言語を使ったWeb開発について...",
-  "status": "draft",
+  "content": "# はじめに\n\nGo言語を使ったWeb開発について...\n\n```mermaid\ngraph LR\n  A[Client] --> B[Server]\n  B --> C[Database]\n```",
   "categoryId": 1,
-  "tagIds": [1, 2, 3]
+  "tagIds": [1, 2]
 }
 ```
 
@@ -469,22 +581,63 @@ sequenceDiagram
 
 ```json
 {
-  "id": 10,
-  "title": "Go言語でのWeb開発入門",
-  "slug": "go-web-development-intro",
-  "content": "# はじめに\n\nGo言語を使ったWeb開発について...",
-  "renderedHtml": "<h1>はじめに</h1><p>Go言語を使ったWeb開発について...</p>",
-  "status": "draft",
-  "authorId": 1,
-  "categoryId": 1,
-  "tags": [
-    {"id": 1, "name": "Go", "slug": "go"},
-    {"id": 2, "name": "Web開発", "slug": "web-development"},
-    {"id": 3, "name": "入門", "slug": "beginner"}
-  ],
-  "createdAt": "2024-01-15T10:30:00Z",
-  "updatedAt": "2024-01-15T10:30:00Z"
+  "ID": 10,
+  "Title": "Go言語でのWeb開発入門",
+  "Slug": "go-web-development-intro",
+  "Content": "# はじめに\n\nGo言語を使ったWeb開発について...",
+  "RenderedHTML": "<h1 id=\"はじめに\">はじめに</h1>\n<p>Go言語を使ったWeb開発について...</p>\n<p><svg>...</svg></p>",
+  "Status": "draft",
+  "AuthorID": 1,
+  "CategoryID": 1,
+  "CreatedAt": "2025-11-22T10:30:00Z",
+  "UpdatedAt": "2025-11-22T10:30:00Z",
+  "Author": {
+    "ID": 1,
+    "Username": "admin"
+  },
+  "Category": {
+    "ID": 1,
+    "Name": "Technology",
+    "Slug": "technology"
+  },
+  "Tags": [
+    {"ID": 1, "Name": "Golang", "Slug": "golang"},
+    {"ID": 2, "Name": "Docker", "Slug": "docker"}
+  ]
 }
+```
+
+#### DELETE /api/admin/posts?id=10
+
+**リクエストヘッダー:**
+
+```text
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+```
+
+**レスポンス(成功):**
+
+```json
+{
+  "success": true,
+  "message": "Post deleted successfully"
+}
+```
+
+**レスポンス(失敗 - 認証なし):**
+
+```text
+HTTP/1.1 401 Unauthorized
+
+Authorization header required
+```
+
+**レスポンス(失敗 - 無効なトークン):**
+
+```text
+HTTP/1.1 401 Unauthorized
+
+Invalid or expired token
 ```
 
 ## 6. Markdown/Mermaidレンダリング設計
@@ -1375,23 +1528,54 @@ blog-engine/
 
 ## 実装状況
 
-✅ 完全実装済み
+### 完全実装済み
 
-- Clean Architecture採用（Entity/Repository/UseCase/Interface層）
-- すべてのレイヤーをDIで疎結合化
-- BUNを使用したSQL操作（文字列結合なし）
-- MySQLのTestContainerを使用したリポジトリテスト（共有コンテナ方式）
-- SQLマイグレーションファイルからの自動読み込み（二重管理回避）
-- JWT認証（HS256、ブラックリスト管理）とbcrypt（cost=12）
-- goldmark + Mermaidレンダリング
-- OWASP TOP10対応のセキュリティ実装
-- ユニットテストカバレッジ
-    - Entity層: 100%
-    - Auth層: 85.1%
-    - Persistence層: 64.1%
-    - UseCase層: 51.1%
-    - Middleware層: 50.0%
-    - 全体: 40.5%
-- Docker/Docker Compose構成
-- lint/build/test全Pass確認済み
-- テストスクリプト（scripts/test.sh）完備
+- **アーキテクチャ**
+    - Clean Architecture採用（Entity/Repository/UseCase/Interface層）
+    - すべてのレイヤーをDIで疎結合化
+    - BUNを使用したSQL操作（文字列結合なし、SQLインジェクション対策完備）
+- **API実装**
+    - 全30エンドポイント実装完了
+        - 認証API: 4エンドポイント
+        - 公開API: 13エンドポイント（記事、カテゴリ、タグの読み取り）
+        - 管理API: 13エンドポイント（CRUD操作）
+    - RESTful API設計に準拠
+    - 適切なHTTPステータスコード返却
+- **セキュリティ**
+    - JWT認証（HS256、Access/Refresh Token、ブラックリスト管理）
+    - bcrypt パスワードハッシュ（cost=12）
+    - OWASP TOP10完全対応
+        - SQLインジェクション対策（BUN ORM使用）
+        - XSS対策（CSP、テンプレート自動エスケープ）
+        - CSRF対策（SameSite Cookie）
+        - セキュリティヘッダー完備
+        - HSTS、X-Frame-Options、X-Content-Type-Options等
+    - 権限ベースアクセス制御（Admin/Editor）
+    - すべての管理APIがJWT認証で保護されていることを確認済み
+- **レンダリング**
+    - goldmark による Markdown パース
+    - Mermaid CLI (mmdc) によるサーバーサイド SVG レンダリング
+    - HTML テンプレートエンジン（標準 html/template）
+    - ハイブリッド型（HTML SSR + REST API）
+- **テスト**
+    - MySQLのTestContainerを使用したリポジトリテスト（共有コンテナ方式）
+    - SQLマイグレーションファイルからの自動読み込み（二重管理回避）
+    - ユニットテストカバレッジ
+        - Entity層: 100%
+        - Auth層: 85.1%
+        - Persistence層: 64.1%
+        - UseCase層: 51.1%
+        - Middleware層: 50.0%
+        - 全体: 40.5%
+    - lint/build/test全Pass確認済み
+- **インフラストラクチャ**
+    - Docker/Docker Compose構成完備
+    - Chromium/Puppeteer統合（Mermaidレンダリング用）
+    - セキュリティ設定済み（cap_add: SYS_ADMIN）
+    - テストスクリプト（scripts/test.sh）
+    - セキュリティテストスクリプト（scripts/security_test.sh）
+- **本番環境対応**
+    - すべてのエンドポイントが適切にJWT認証で保護されている
+    - セキュリティヘッダーが正しく設定されている
+    - 認証なしアクセス、無効トークンが正しく拒否される
+    - 本番環境デプロイ可能なセキュリティレベル達成

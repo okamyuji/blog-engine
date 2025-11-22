@@ -88,7 +88,7 @@ func (h *PostHandler) Delete(w http.ResponseWriter, r *http.Request) {
 	presenter.JSONSuccess(w, nil, "Post deleted successfully")
 }
 
-// GetByIDID 指定で記事取得ハンドラー
+// GetByID ID指定で記事取得ハンドラー（公開記事のみ）
 func (h *PostHandler) GetByID(w http.ResponseWriter, r *http.Request) {
 	idStr := r.URL.Query().Get("id")
 	id, err := strconv.ParseInt(idStr, 10, 64)
@@ -103,10 +103,16 @@ func (h *PostHandler) GetByID(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// 公開記事のみ返却（下書きは認証が必要）
+	if post.Status != "published" {
+		presenter.JSONError(w, http.StatusNotFound, "Post not found")
+		return
+	}
+
 	presenter.JSONResponse(w, http.StatusOK, post)
 }
 
-// GetBySlug スラッグ指定で記事取得ハンドラー
+// GetBySlug スラッグ指定で記事取得ハンドラー（公開記事のみ）
 func (h *PostHandler) GetBySlug(w http.ResponseWriter, r *http.Request) {
 	slug := r.URL.Query().Get("slug")
 	if slug == "" {
@@ -116,6 +122,12 @@ func (h *PostHandler) GetBySlug(w http.ResponseWriter, r *http.Request) {
 
 	post, err := h.postUseCase.GetBySlug(r.Context(), slug)
 	if err != nil {
+		presenter.JSONError(w, http.StatusNotFound, "Post not found")
+		return
+	}
+
+	// 公開記事のみ返却（下書きは認証が必要）
+	if post.Status != "published" {
 		presenter.JSONError(w, http.StatusNotFound, "Post not found")
 		return
 	}

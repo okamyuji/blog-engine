@@ -18,12 +18,18 @@ services:
       - SERVER_PORT=8080
       - SERVER_HOST=0.0.0.0
       - ENV=development
+      - PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true
+      - PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium-browser
     depends_on:
       db:
         condition: service_healthy
     networks:
       - blog-network
     restart: unless-stopped
+    cap_add:
+      - SYS_ADMIN
+    security_opt:
+      - seccomp:unconfined
 
   db:
     image: mysql:8.0

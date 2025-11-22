@@ -6,6 +6,8 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+
+	"github.com/google/uuid"
 )
 
 // MermaidRenderer Mermaidレンダラーインターフェース
@@ -32,9 +34,10 @@ func (r *mermaidCLIRenderer) RenderToSVG(mermaidCode string) (string, error) {
 		return "", fmt.Errorf("mermaid code cannot be empty")
 	}
 
-	// 一時ファイルを作成
-	inputFile := filepath.Join(r.tmpDir, fmt.Sprintf("mermaid-%d.mmd", os.Getpid()))
-	outputFile := filepath.Join(r.tmpDir, fmt.Sprintf("mermaid-%d.svg", os.Getpid()))
+	// 一時ファイルを作成（UUIDで一意性を保証し、競合状態を回避）
+	uniqueID := uuid.New().String()
+	inputFile := filepath.Join(r.tmpDir, fmt.Sprintf("mermaid-%s.mmd", uniqueID))
+	outputFile := filepath.Join(r.tmpDir, fmt.Sprintf("mermaid-%s.svg", uniqueID))
 
 	// 入力ファイルにMermaidコードを書き込み
 	if err := os.WriteFile(inputFile, []byte(mermaidCode), 0644); err != nil {
