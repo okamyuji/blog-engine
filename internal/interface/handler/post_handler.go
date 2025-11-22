@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"strconv"
 
+	"my-blog-engine/internal/domain/entity"
 	"my-blog-engine/internal/interface/middleware"
 	"my-blog-engine/internal/interface/presenter"
 	"my-blog-engine/internal/usecase"
@@ -104,7 +105,7 @@ func (h *PostHandler) GetByID(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// 公開記事のみ返却（下書きは認証が必要）
-	if post.Status != "published" {
+	if post.Status != entity.StatusPublished {
 		presenter.JSONError(w, http.StatusNotFound, "Post not found")
 		return
 	}
@@ -127,7 +128,7 @@ func (h *PostHandler) GetBySlug(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// 公開記事のみ返却（下書きは認証が必要）
-	if post.Status != "published" {
+	if post.Status != entity.StatusPublished {
 		presenter.JSONError(w, http.StatusNotFound, "Post not found")
 		return
 	}

@@ -374,7 +374,7 @@ sequenceDiagram
 
 ### エンドポイント一覧
 
-本システムは全30のRESTful APIエンドポイントを提供しており、公開API（13）、認証必須API（2）、管理API（15）に分類される。
+本システムは合計29のRESTful APIエンドポイントを提供しており、認証API（4）、公開API（11）、管理API（14）に分類されます。
 
 #### 5.1 認証API
 
@@ -435,6 +435,7 @@ sequenceDiagram
 
 | メソッド | エンドポイント | 説明 | パラメータ | 必要権限 |
 |---------|--------------|------|-----------|---------|
+| GET | `/api/admin/categories` | カテゴリ一覧 | - | Admin, Editor |
 | POST | `/api/admin/categories` | カテゴリ作成 | Body: JSON | Admin, Editor |
 | PUT | `/api/admin/categories` | カテゴリ更新 | `id`, Body: JSON | Admin, Editor |
 | DELETE | `/api/admin/categories` | カテゴリ削除 | `id` | Admin, Editor |
@@ -443,6 +444,7 @@ sequenceDiagram
 
 | メソッド | エンドポイント | 説明 | パラメータ | 必要権限 |
 |---------|--------------|------|-----------|---------|
+| GET | `/api/admin/tags` | タグ一覧 | - | Admin, Editor |
 | POST | `/api/admin/tags` | タグ作成 | Body: JSON | Admin, Editor |
 | PUT | `/api/admin/tags` | タグ更新 | `id`, Body: JSON | Admin, Editor |
 | DELETE | `/api/admin/tags` | タグ削除 | `id` | Admin, Editor |
