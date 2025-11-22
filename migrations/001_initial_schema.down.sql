@@ -1,0 +1,8 @@
+-- テーブルを逆順で削除
+DROP TABLE IF EXISTS token_blacklist;
+DROP TABLE IF EXISTS post_tags;
+DROP TABLE IF EXISTS tags;
+DROP TABLE IF EXISTS posts;
+DROP TABLE IF EXISTS categories;
+DROP TABLE IF EXISTS users;
+

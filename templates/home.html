@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{.Title}}</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100">
+    <header class="bg-white shadow">
+        <div class="container mx-auto px-4 py-6">
+            <h1 class="text-3xl font-bold text-gray-800">My Blog</h1>
+        </div>
+    </header>
+
+    <main class="container mx-auto px-4 py-8">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <!-- メインコンテンツ -->
+            <div class="md:col-span-2">
+                <h2 class="text-2xl font-bold mb-6">最新の記事</h2>
+                
+                {{if .Posts}}
+                    {{range .Posts}}
+                    <article class="bg-white rounded-lg shadow mb-6 p-6">
+                        <h3 class="text-xl font-bold mb-2">
+                            <a href="/posts/{{.Slug}}" class="text-blue-600 hover:text-blue-800">{{.Title}}</a>
+                        </h3>
+                        <div class="text-gray-600 text-sm mb-4">
+                            <span>{{.Author.Username}}</span> • 
+                            <span>{{.Category.Name}}</span> • 
+                            <time>{{.PublishedAt}}</time>
+                        </div>
+                        <div class="prose max-w-none">
+                            {{.RenderedHTML}}
+                        </div>
+                        <div class="mt-4">
+                            {{range .Tags}}
+                            <span class="inline-block bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded mr-2">
+                                {{.Name}}
+                            </span>
+                            {{end}}
+                        </div>
+                    </article>
+                    {{end}}
+                {{else}}
+                    <p class="text-gray-600">記事がありません。</p>
+                {{end}}
+            </div>
+
+            <!-- サイドバー -->
+            <aside>
+                <div class="bg-white rounded-lg shadow p-6 mb-6">
+                    <h3 class="text-lg font-bold mb-4">カテゴリ</h3>
+                    <ul class="space-y-2">
+                        {{if .Categories}}
+                            {{range .Categories}}
+                            <li>
+                                <a href="/category/{{.Slug}}" class="text-blue-600 hover:text-blue-800">
+                                    {{.Name}}
+                                </a>
+                            </li>
+                            {{end}}
+                        {{else}}
+                            <li class="text-gray-600">カテゴリがありません</li>
+                        {{end}}
+                    </ul>
+                </div>
+
+                <div class="bg-white rounded-lg shadow p-6">
+                    <h3 class="text-lg font-bold mb-4">API エンドポイント</h3>
+                    <ul class="space-y-2 text-sm">
+                        <li><a href="/health" class="text-blue-600 hover:text-blue-800">/health</a></li>
+                        <li><a href="/api/posts" class="text-blue-600 hover:text-blue-800">/api/posts</a></li>
+                        <li><a href="/api/categories" class="text-blue-600 hover:text-blue-800">/api/categories</a></li>
+                        <li><a href="/api/tags" class="text-blue-600 hover:text-blue-800">/api/tags</a></li>
+                    </ul>
+                </div>
+            </aside>
+        </div>
+    </main>
+
+    <footer class="bg-white shadow mt-12">
+        <div class="container mx-auto px-4 py-6 text-center text-gray-600">
+            <p>© 2025 My Blog. Powered by Clean Architecture & Go.</p>
+        </div>
+    </footer>
+</body>
+</html>
+
