@@ -26,6 +26,14 @@ services:
     networks:
       - blog-network
     restart: unless-stopped
+    # Chromium/PuppeteerでMermaid図をレンダリングするために必要な権限
+    # 警告: SYS_ADMIN capabilityとseccomp:unconfinedはコンテナセキュリティを大幅に低下させる
+    # 本番環境デプロイ前にこの設定を見直すこと
+    # セキュリティへの影響: コンテナが昇格された権限を持ち、分離が弱まるため、侵害時のリスクが増大する
+    # 代替アプローチ:
+    #   - Chromium専用のより制限的なseccompプロファイルを使用
+    #   - SYS_ADMINの代わりに--no-sandbox --disable-setuid-sandboxフラグをChromiumで使用
+    #   - レンダリングサービスを別の分離されたコンテナで実行し、そこでのみ昇格された権限を付与
     cap_add:
       - SYS_ADMIN
     security_opt:
