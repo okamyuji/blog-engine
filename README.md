@@ -619,7 +619,7 @@ func (r *MermaidRenderer) Render(w io.Writer, source []byte, n ast.Node) error {
 
 ## 7. Docker構成設計
 
-### docker-compose.yml
+### compose.yml
 
 ```yaml
 version: '3.8'
@@ -992,7 +992,7 @@ func TestPostHandler_Create(t *testing.T) {
 #!/bin/bash
 # test_e2e.sh
 
-docker-compose up -d
+docker compose up -d
 sleep 10
 
 # ログインテスト
@@ -1007,7 +1007,7 @@ curl -X POST http://localhost:8080/admin/posts \
   -H "Content-Type: application/json" \
   -d '{"title":"E2E Test","slug":"e2e-test","content":"# Test"}'
 
-docker-compose down
+docker compose down
 ```
 
 ### カバレッジ目標
@@ -1140,13 +1140,13 @@ cp .env.example .env
 # .envを編集してJWT_SECRET、DB_PASSWORD等を設定
 
 # 3. Docker Compose起動
-docker-compose up -d
+docker compose up -d
 
 # 4. マイグレーション実行(初回のみ)
-docker-compose exec app /app/blog-engine migrate
+docker compose exec app /app/blog-engine migrate
 
 # 5. 初期管理者ユーザー作成
-docker-compose exec db mysql -u bloguser -pblogpass blogdb < scripts/create_admin.sql
+docker compose exec db mysql -u bloguser -pblogpass blogdb < scripts/create_admin.sql
 
 # 6. アプリケーション確認
 curl http://localhost:8080/health
@@ -1179,10 +1179,10 @@ air
 # migrations/001_initial_schema.down.sql
 
 # マイグレーション実行
-docker-compose exec app /app/blog-engine migrate up
+docker compose exec app /app/blog-engine migrate up
 
 # ロールバック
-docker-compose exec app /app/blog-engine migrate down
+docker compose exec app /app/blog-engine migrate down
 ```
 
 ### 初期データ投入
@@ -1255,7 +1255,7 @@ blog-engine/
 ├── README.md                      # 本設計ドキュメント
 ├── .gitignore
 ├── .env.example                   # 環境変数テンプレート
-├── docker-compose.yml
+├── compose.yml
 ├── Dockerfile
 ├── go.mod
 ├── go.sum
@@ -1371,7 +1371,7 @@ blog-engine/
 ---
 
 **設計バージョン**: 1.0.0  
-**最終更新日**: 2024-11-22
+**最終更新日**: 2025-11-22
 
 ## 実装状況
 
