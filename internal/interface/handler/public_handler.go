@@ -61,6 +61,10 @@ func (h *PublicHandler) Home(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// 投稿をテンプレート用に変換
+	// RenderedHTMLをtemplate.HTMLに変換することは安全です。
+	// なぜなら、RenderedHTMLはmarkdownレンダラー（goldmark）によって
+	// すでにサニタイズされており、HTMLエスケープとプレースホルダーベースの
+	// SVG挿入によってXSS攻撃から保護されているためです。
 	postViews := make([]PostView, len(posts))
 	for i, post := range posts {
 		postViews[i] = PostView{

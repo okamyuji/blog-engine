@@ -68,7 +68,9 @@ func (r *markdownRenderer) Render(source string) (string, error) {
 		return "", fmt.Errorf("failed to render markdown: %w", err)
 	}
 
-	// プレースホルダーをSVGに置き換え（エスケープを解除）
+	// プレースホルダーをSVGに置き換え
+	// プレースホルダーはgoldmarkによってHTMLエスケープされるため、
+	// エスケープされた形式で置換する必要があります
 	result := buf.String()
 	for placeholder, svg := range svgMap {
 		escapedPlaceholder := htmllib.EscapeString(placeholder)
@@ -79,6 +81,9 @@ func (r *markdownRenderer) Render(source string) (string, error) {
 }
 
 // extractMermaidBlocks MermaidコードブロックをSVGに変換してプレースホルダーに置換
+// 注意: この関数は並行呼び出しに対して安全ではありません。
+// markdownRendererインスタンスは各リクエストで新規作成されるため、
+// 実際の使用では問題になりません。
 func (r *markdownRenderer) extractMermaidBlocks(source string) (string, map[string]string, error) {
 	// ```mermaid ... ``` のパターンをマッチ
 	re := regexp.MustCompile("(?s)```mermaid\\s*\\n(.*?)```")
@@ -99,12 +104,17 @@ func (r *markdownRenderer) extractMermaidBlocks(source string) (string, map[stri
 		// SVGに変換
 		svg, err := r.mermaidRenderer.RenderToSVG(mermaidCode)
 		if err != nil {
-			// エラー時は元のコードブロックを返す
+			// Mermaidレンダリングエラー時は元のコードブロックを返す
+			// これによりユーザーはMarkdown内でエラーを確認でき、
+			// 記事全体のレンダリングは継続されます
 			return match
 		}
 
-		// プレースホルダーを生成
-		placeholder := fmt.Sprintf("MERMAID_SVG_PLACEHOLDER_%d", counter)
+		// プレースホルダーを生成（一意性を保証）
+		// ユーザーコンテンツとの衝突を防ぐため、特殊な接頭辞 + カウンター + SVG長を使用
+		// MERMAIDSVGPLACEHOLDER形式はMarkdown記法と衝突せず、
+		// 通常のコンテンツに含まれる可能性が極めて低いです
+		placeholder := fmt.Sprintf("MERMAIDSVGPLACEHOLDER%dLEN%d", counter, len(svg))
 		counter++
 		svgMap[placeholder] = svg
 
