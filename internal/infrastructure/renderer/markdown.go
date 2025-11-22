@@ -81,9 +81,9 @@ func (r *markdownRenderer) Render(source string) (string, error) {
 }
 
 // extractMermaidBlocks MermaidコードブロックをSVGに変換してプレースホルダーに置換
-// 注意: この関数は並行呼び出しに対して安全ではありません。
-// markdownRendererインスタンスは各リクエストで新規作成されるため、
-// 実際の使用では問題になりません。
+// この関数は並行呼び出しに対して安全です。
+// counterとsvgMapは各呼び出しごとにローカル変数として生成されるため、
+// 複数のgoroutineから同時に呼び出されても競合状態は発生しません。
 func (r *markdownRenderer) extractMermaidBlocks(source string) (string, map[string]string, error) {
 	// ```mermaid ... ``` のパターンをマッチ
 	re := regexp.MustCompile("(?s)```mermaid\\s*\\n(.*?)```")
