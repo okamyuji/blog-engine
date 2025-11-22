@@ -1132,7 +1132,7 @@ func HealthCheckHandler(db *sql.DB) http.HandlerFunc {
 
 ```bash
 # 1. リポジトリクローン
-git clone <repository-url>
+git clone https://github.com/okamyuji/blog-engine
 cd blog-engine
 
 # 2. 環境変数設定
