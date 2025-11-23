@@ -13,6 +13,9 @@ import (
 	"github.com/yuin/goldmark/renderer/html"
 )
 
+// mermaidBlockRe Mermaidコードブロックマッチ用の正規表現（パフォーマンス最適化のため事前コンパイル）
+var mermaidBlockRe = regexp.MustCompile("(?s)```mermaid\\s*\\n(.*?)```")
+
 // MarkdownRenderer Markdownレンダラーインターフェース
 type MarkdownRenderer interface {
 	Render(source string) (string, error)
@@ -85,15 +88,12 @@ func (r *markdownRenderer) Render(source string) (string, error) {
 // counterとsvgMapは各呼び出しごとにローカル変数として生成されるため、
 // 複数のgoroutineから同時に呼び出されても競合状態は発生しません。
 func (r *markdownRenderer) extractMermaidBlocks(source string) (string, map[string]string, error) {
-	// ```mermaid ... ``` のパターンをマッチ
-	re := regexp.MustCompile("(?s)```mermaid\\s*\\n(.*?)```")
-
 	svgMap := make(map[string]string)
 	counter := 0
 
-	result := re.ReplaceAllStringFunc(source, func(match string) string {
-		// Mermaidコードを抽出（外側のreを再利用）
-		matches := re.FindStringSubmatch(match)
+	result := mermaidBlockRe.ReplaceAllStringFunc(source, func(match string) string {
+		// Mermaidコードを抽出（パッケージレベルの正規表現を使用）
+		matches := mermaidBlockRe.FindStringSubmatch(match)
 		if len(matches) < 2 {
 			return match
 		}
