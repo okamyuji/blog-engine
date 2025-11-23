@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"fmt"
 	htmllib "html"
+	"log"
 	"regexp"
 	"strings"
 
@@ -103,6 +104,8 @@ func (r *markdownRenderer) extractMermaidBlocks(source string) (string, map[stri
 		// SVGに変換
 		svg, err := r.mermaidRenderer.RenderToSVG(mermaidCode)
 		if err != nil {
+			// エラーをログに記録（本番環境でのデバッグ用）
+			log.Printf("Mermaid rendering failed: %v (code preview: %.50s...)", err, mermaidCode)
 			// Mermaidレンダリングエラー時は元のコードブロックを返す
 			// これによりユーザーはMarkdown内でエラーを確認でき、
 			// 記事全体のレンダリングは継続されます
