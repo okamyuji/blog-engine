@@ -39,8 +39,8 @@ func (r *mermaidCLIRenderer) RenderToSVG(mermaidCode string) (string, error) {
 	inputFile := filepath.Join(r.tmpDir, fmt.Sprintf("mermaid-%s.mmd", uniqueID))
 	outputFile := filepath.Join(r.tmpDir, fmt.Sprintf("mermaid-%s.svg", uniqueID))
 
-	// 入力ファイルにMermaidコードを書き込み
-	if err := os.WriteFile(inputFile, []byte(mermaidCode), 0644); err != nil {
+	// 入力ファイルにMermaidコードを書き込み（所有者のみ読み書き可能）
+	if err := os.WriteFile(inputFile, []byte(mermaidCode), 0600); err != nil {
 		return "", fmt.Errorf("failed to write input file: %w", err)
 	}
 	defer func() {
