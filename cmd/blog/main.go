@@ -69,7 +69,7 @@ func main() {
 		log.Fatal("Failed to create JWT manager:", err)
 	}
 
-	mermaidRenderer := renderer.NewMockMermaidRenderer() // 本番ではNewMermaidRenderer()を使用
+	mermaidRenderer := renderer.NewMermaidRenderer()
 	mdRenderer := renderer.NewMarkdownRenderer(mermaidRenderer)
 
 	// UseCase初期化
@@ -115,6 +115,10 @@ func main() {
 						postHandler.List(w, r)
 					case http.MethodPost:
 						postHandler.Create(w, r)
+					case http.MethodPut:
+						postHandler.Update(w, r)
+					case http.MethodDelete:
+						postHandler.Delete(w, r)
 					default:
 						http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
 					}
@@ -141,6 +145,7 @@ func main() {
 
 	// 公開記事エンドポイント
 	mux.HandleFunc("/api/posts", postHandler.ListPublished)
+	mux.HandleFunc("/api/posts/id", postHandler.GetByID)
 	mux.HandleFunc("/api/posts/slug", postHandler.GetBySlug)
 
 	// カテゴリエンドポイント
@@ -151,6 +156,8 @@ func main() {
 			http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
 		}
 	})
+	mux.HandleFunc("/api/categories/id", categoryHandler.GetByID)
+	mux.HandleFunc("/api/categories/slug", categoryHandler.GetBySlug)
 
 	mux.Handle("/api/admin/categories",
 		authMiddleware.Authenticate(
@@ -181,6 +188,8 @@ func main() {
 			http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
 		}
 	})
+	mux.HandleFunc("/api/tags/id", tagHandler.GetByID)
+	mux.HandleFunc("/api/tags/slug", tagHandler.GetBySlug)
 
 	mux.Handle("/api/admin/tags",
 		authMiddleware.Authenticate(
