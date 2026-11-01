@@ -116,8 +116,8 @@ func (r *postRepositoryImpl) List(ctx context.Context, limit, offset int) ([]*en
 		Relation("Category").
 		Relation("Tags").
 		Order("created_at DESC").
-		Limit(limit).
-		Offset(offset).
+		Limit(int64(limit)).
+		Offset(int64(offset)).
 		Scan(ctx)
 
 	if err != nil {
@@ -137,8 +137,8 @@ func (r *postRepositoryImpl) ListPublished(ctx context.Context, limit, offset in
 		Relation("Tags").
 		Where("p.status = ?", entity.StatusPublished).
 		Order("published_at DESC").
-		Limit(limit).
-		Offset(offset).
+		Limit(int64(limit)).
+		Offset(int64(offset)).
 		Scan(ctx)
 
 	if err != nil {
@@ -159,8 +159,8 @@ func (r *postRepositoryImpl) ListByCategory(ctx context.Context, categoryID int6
 		Where("p.category_id = ?", categoryID).
 		Where("p.status = ?", entity.StatusPublished).
 		Order("published_at DESC").
-		Limit(limit).
-		Offset(offset).
+		Limit(int64(limit)).
+		Offset(int64(offset)).
 		Scan(ctx)
 
 	if err != nil {
@@ -182,8 +182,8 @@ func (r *postRepositoryImpl) ListByTag(ctx context.Context, tagID int64, limit, 
 		Where("pt.tag_id = ?", tagID).
 		Where("p.status = ?", entity.StatusPublished).
 		Order("published_at DESC").
-		Limit(limit).
-		Offset(offset).
+		Limit(int64(limit)).
+		Offset(int64(offset)).
 		Scan(ctx)
 
 	if err != nil {
@@ -203,8 +203,8 @@ func (r *postRepositoryImpl) ListByAuthor(ctx context.Context, authorID int64, l
 		Relation("Tags").
 		Where("p.author_id = ?", authorID).
 		Order("created_at DESC").
-		Limit(limit).
-		Offset(offset).
+		Limit(int64(limit)).
+		Offset(int64(offset)).
 		Scan(ctx)
 
 	if err != nil {
@@ -224,7 +224,7 @@ func (r *postRepositoryImpl) Count(ctx context.Context) (int, error) {
 		return 0, fmt.Errorf("failed to count posts: %w", err)
 	}
 
-	return count, nil
+	return int(count), nil
 }
 
 // CountPublished 公開済み記事数を取得
@@ -238,7 +238,7 @@ func (r *postRepositoryImpl) CountPublished(ctx context.Context) (int, error) {
 		return 0, fmt.Errorf("failed to count published posts: %w", err)
 	}
 
-	return count, nil
+	return int(count), nil
 }
 
 // AddTags 記事にタグを追加
