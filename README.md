@@ -648,28 +648,31 @@ Invalid or expired token
 
 ```go
 import (
-    "github.com/yuin/goldmark"
-    "github.com/yuin/goldmark/extension"
-    "github.com/yuin/goldmark/parser"
-    "github.com/yuin/goldmark/renderer/html"
+    "github.com/yuin/goldmark/v2/extension"
+    "github.com/yuin/goldmark/v2/parser"
+    "github.com/yuin/goldmark/v2/renderer/html"
 )
 
-md := goldmark.New(
-    goldmark.WithExtensions(
-        extension.GFM,                // GitHub Flavored Markdown
-        extension.Table,              // テーブル
-        extension.Strikethrough,      // 取り消し線
-        extension.Linkify,            // 自動リンク化
-        extension.TaskList,           // タスクリスト
+p := parser.New(
+    parser.WithExtensions(
+        extension.GFMParser,           // GitHub Flavored Markdown
+        extension.TableParser,         // テーブル
+        extension.StrikethroughParser, // 取り消し線
+        extension.LinkifyParser,       // 自動リンク化
+        extension.TaskListItemParser,  // タスクリスト
     ),
-    goldmark.WithParserOptions(
-        parser.WithAutoHeadingID(),   // 見出しに自動ID付与
+    parser.WithAutoHeadingID(),        // 見出しに自動ID付与
+)
+r := html.New(
+    html.WithExtensions(
+        extension.GFMHTMLRenderer,
+        extension.TableHTMLRenderer,
+        extension.StrikethroughHTMLRenderer,
+        extension.TaskListItemHTMLRenderer,
     ),
-    goldmark.WithRendererOptions(
-        html.WithHardWraps(),         // 改行を<br>に変換
-        html.WithXHTML(),             // XHTML互換
-        html.WithUnsafe(),            // 生HTMLを許可(注意)
-    ),
+    html.WithHardWraps(),              // 改行を<br>に変換
+    html.WithXHTML(),                  // XHTML互換
+    // html.WithUnsafe()は使用しない(XSS対策)
 )
 ```
 
@@ -1377,7 +1380,7 @@ go 1.23
 require (
     github.com/golang-jwt/jwt/v5 v5.2.0
     github.com/go-sql-driver/mysql v1.7.1
-    github.com/yuin/goldmark v1.6.0
+    github.com/yuin/goldmark/v2 v2.1.9
     golang.org/x/crypto v0.17.0
     github.com/google/uuid v1.5.0
 )
@@ -1393,7 +1396,7 @@ require (
 |----------|------|-----------|
 | `github.com/golang-jwt/jwt/v5` | JWT生成・検証 | v5.2.0 |
 | `github.com/go-sql-driver/mysql` | MySQLドライバ | v1.7.1 |
-| `github.com/yuin/goldmark` | Markdownパーサー | v1.6.0 |
+| `github.com/yuin/goldmark/v2` | Markdownパーサー | v2.1.9 |
 | `golang.org/x/crypto/bcrypt` | パスワードハッシュ | v0.17.0 |
 | `github.com/google/uuid` | UUID生成 | v1.5.0 |
 

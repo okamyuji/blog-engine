@@ -8,10 +8,9 @@ import (
 	"regexp"
 	"strings"
 
-	"github.com/yuin/goldmark"
-	"github.com/yuin/goldmark/extension"
-	"github.com/yuin/goldmark/parser"
-	"github.com/yuin/goldmark/renderer/html"
+	"github.com/yuin/goldmark/v2/extension"
+	"github.com/yuin/goldmark/v2/parser"
+	"github.com/yuin/goldmark/v2/renderer/html"
 )
 
 // mermaidBlockRe Mermaidコードブロックマッチ用の正規表現（パフォーマンス最適化のため事前コンパイル）
@@ -24,32 +23,38 @@ type MarkdownRenderer interface {
 
 // markdownRenderer MarkdownRendererの実装
 type markdownRenderer struct {
-	md              goldmark.Markdown
+	parser          parser.Parser
+	renderer        html.Renderer
 	mermaidRenderer MermaidRenderer
 }
 
 // NewMarkdownRenderer 新しいMarkdownRendererを作成
 func NewMarkdownRenderer(mermaidRenderer MermaidRenderer) MarkdownRenderer {
-	md := goldmark.New(
-		goldmark.WithExtensions(
-			extension.GFM,           // GitHub Flavored Markdown
-			extension.Table,         // テーブル
-			extension.Strikethrough, // 取り消し線
-			extension.Linkify,       // 自動リンク化
-			extension.TaskList,      // タスクリスト
+	p := parser.New(
+		parser.WithExtensions(
+			extension.GFMParser,           // GitHub Flavored Markdown
+			extension.TableParser,         // テーブル
+			extension.StrikethroughParser, // 取り消し線
+			extension.LinkifyParser,       // 自動リンク化
+			extension.TaskListItemParser,  // タスクリスト
 		),
-		goldmark.WithParserOptions(
-			parser.WithAutoHeadingID(), // 見出しに自動ID付与
+		parser.WithAutoHeadingID(), // 見出しに自動ID付与
+	)
+	r := html.New(
+		html.WithExtensions(
+			extension.GFMHTMLRenderer,
+			extension.TableHTMLRenderer,
+			extension.StrikethroughHTMLRenderer,
+			extension.TaskListItemHTMLRenderer,
 		),
-		goldmark.WithRendererOptions(
-			html.WithHardWraps(), // 改行を<br>に変換
-			html.WithXHTML(),     // XHTML互換
-			// html.WithUnsafe()は使用しない（XSS対策）
-		),
+		html.WithHardWraps(), // 改行を<br>に変換
+		html.WithXHTML(),     // XHTML互換
+		// html.WithUnsafe()は使用しない（XSS対策）
 	)
 
 	return &markdownRenderer{
-		md:              md,
+		parser:          p,
+		renderer:        r,
 		mermaidRenderer: mermaidRenderer,
 	}
 }
@@ -68,7 +73,8 @@ func (r *markdownRenderer) Render(source string) (string, error) {
 
 	// Markdownをレンダリング（HTMLエスケープされる）
 	var buf bytes.Buffer
-	if err := r.md.Convert([]byte(processedSource), &buf); err != nil {
+	src := []byte(processedSource)
+	if err := r.renderer.Render(&buf, src, r.parser.Parse(src)); err != nil {
 		return "", fmt.Errorf("failed to render markdown: %w", err)
 	}
 

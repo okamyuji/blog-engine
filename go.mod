@@ -10,7 +10,7 @@ require (
 	github.com/testcontainers/testcontainers-go/modules/mysql v0.44.0
 	github.com/uptrace/bun v1.3.0
 	github.com/uptrace/bun/dialect/mysqldialect v1.3.0
-	github.com/yuin/goldmark v1.8.6
+	github.com/yuin/goldmark/v2 v2.1.9
 	golang.org/x/crypto v0.58.0
 )
 
