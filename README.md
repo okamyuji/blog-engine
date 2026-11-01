@@ -1298,13 +1298,15 @@ cp .env.example .env
 # .envを編集してJWT_SECRET、DB_PASSWORD等を設定
 
 # 3. Docker Compose起動
+# dbコンテナはmysql-dataボリュームが空の初回起動時に、
+# migrations/*.sqlを/docker-entrypoint-initdb.dから名前順に実行してテーブルを作成する
 docker compose up -d
 
-# 4. マイグレーション実行(初回のみ)
-docker compose exec app /app/blog-engine migrate
+# 4. テーブル作成の確認
+docker compose exec db mysql -u bloguser -pblogpass blogdb -e "SHOW TABLES"
 
 # 5. 初期管理者ユーザー作成
-docker compose exec db mysql -u bloguser -pblogpass blogdb < scripts/create_admin.sql
+docker compose exec -T db mysql -u bloguser -pblogpass blogdb < scripts/create_admin.sql
 
 # 6. アプリケーション確認
 curl http://localhost:8080/health
@@ -1332,16 +1334,22 @@ air
 ### マイグレーション管理
 
 ```bash
-# 新しいマイグレーションファイル作成
+# マイグレーションファイル
 # migrations/001_initial_schema.up.sql
 # migrations/001_initial_schema.down.sql
 
-# マイグレーション実行
-docker compose exec app /app/blog-engine migrate up
+# 既存のmysql-dataボリュームに適用(初回起動時の自動実行は空のボリュームでしか動かない)
+docker compose exec -T db mysql -u bloguser -pblogpass blogdb < migrations/001_initial_schema.up.sql
 
 # ロールバック
-docker compose exec app /app/blog-engine migrate down
+docker compose exec -T db mysql -u bloguser -pblogpass blogdb < migrations/001_initial_schema.down.sql
+
+# ボリュームごと作り直す(データは消える)
+docker compose down -v && docker compose up -d
 ```
+
+アプリケーション本体(`/app/blog-engine`)はマイグレーションを実行しない。
+Colimaなどホームディレクトリだけを共有するDocker環境では、ホーム外に置いたクローンの`./migrations`がコンテナから空に見え、初回起動時のテーブル作成が実行されない。
 
 ### 初期データ投入
 
