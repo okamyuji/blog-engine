@@ -147,6 +147,10 @@ func (h *PostHandler) List(w http.ResponseWriter, r *http.Request) {
 	if limit > 100 {
 		limit = 100
 	}
+	// bun は負の OFFSET を黙って捨てて 0 として扱うので、応答の offset も 0 にそろえる
+	if offset < 0 {
+		offset = 0
+	}
 
 	posts, count, err := h.postUseCase.List(r.Context(), limit, offset)
 	if err != nil {
@@ -174,6 +178,10 @@ func (h *PostHandler) ListPublished(w http.ResponseWriter, r *http.Request) {
 	}
 	if limit > 100 {
 		limit = 100
+	}
+	// bun は負の OFFSET を黙って捨てて 0 として扱うので、応答の offset も 0 にそろえる
+	if offset < 0 {
+		offset = 0
 	}
 
 	posts, count, err := h.postUseCase.ListPublished(r.Context(), limit, offset)
