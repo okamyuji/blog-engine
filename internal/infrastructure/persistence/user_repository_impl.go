@@ -125,8 +125,8 @@ func (r *userRepositoryImpl) List(ctx context.Context, limit, offset int) ([]*en
 	err := r.db.NewSelect().
 		Model(&users).
 		Order("created_at DESC").
-		Limit(limit).
-		Offset(offset).
+		Limit(int64(limit)).
+		Offset(int64(offset)).
 		Scan(ctx)
 
 	if err != nil {
@@ -146,5 +146,5 @@ func (r *userRepositoryImpl) Count(ctx context.Context) (int, error) {
 		return 0, fmt.Errorf("failed to count users: %w", err)
 	}
 
-	return count, nil
+	return int(count), nil
 }
