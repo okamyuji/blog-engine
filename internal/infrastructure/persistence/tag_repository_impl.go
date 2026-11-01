@@ -145,5 +145,5 @@ func (r *tagRepositoryImpl) Count(ctx context.Context) (int, error) {
 		return 0, fmt.Errorf("failed to count tags: %w", err)
 	}
 
-	return count, nil
+	return int(count), nil
 }

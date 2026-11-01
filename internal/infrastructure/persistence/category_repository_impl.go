@@ -126,5 +126,5 @@ func (r *categoryRepositoryImpl) Count(ctx context.Context) (int, error) {
 		return 0, fmt.Errorf("failed to count categories: %w", err)
 	}
 
-	return count, nil
+	return int(count), nil
 }
