@@ -110,8 +110,8 @@ github.com/vmihailenco/msgpack/v5 v5.4.1 h1:cQriyiUvjTwOHg8QZaPihLWeRAAVoCpE00IU
 github.com/vmihailenco/msgpack/v5 v5.4.1/go.mod h1:GaZTsDaehaPpQVyxrf5mtQlH+pc21PIudVV/E3rRQok=
 github.com/vmihailenco/tagparser/v2 v2.0.0 h1:y09buUbR+b5aycVFQs/g70pqKVZNBmxwAhO7/IwNM9g=
 github.com/vmihailenco/tagparser/v2 v2.0.0/go.mod h1:Wri+At7QHww0WTrCBeu4J6bNtoV6mEfg5OIWRZA9qds=
-github.com/yuin/goldmark/v2 v2.1.9 h1:C5AZWQOm71NKdpMapPEYEB/UIRHDiMb3h5AJRHxzkXQ=
-github.com/yuin/goldmark/v2 v2.1.9/go.mod h1:G6M4/qOFtfn01/o14BU1UR2Lo5N3S9Qo7xCuz/sHjGQ=
+github.com/yuin/goldmark/v2 v2.1.13 h1:NCbQv+/Vv6UKjWFT9OORfOkMdUbayQz8lK3L18IsOI8=
+github.com/yuin/goldmark/v2 v2.1.13/go.mod h1:G6M4/qOFtfn01/o14BU1UR2Lo5N3S9Qo7xCuz/sHjGQ=
 github.com/yusufpapurcu/wmi v1.2.4 h1:zFUKzehAFReQwLys1b/iSMl+JQGSCSjtVqQn9bBrPo0=
 github.com/yusufpapurcu/wmi v1.2.4/go.mod h1:SBZ9tNy3G9/m5Oi98Zks0QjeHVDvuK0qfxQmPyzfmi0=
 go.opentelemetry.io/auto/sdk v1.2.1 h1:jXsnJ4Lmnqd11kwkBV2LgLoFMZKizbCi5fNZ/ipaZ64=
