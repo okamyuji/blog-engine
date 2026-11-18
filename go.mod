@@ -10,8 +10,8 @@ require (
 	github.com/testcontainers/testcontainers-go/modules/mysql v0.45.0
 	github.com/uptrace/bun v1.3.0
 	github.com/uptrace/bun/dialect/mysqldialect v1.3.0
-	github.com/yuin/goldmark/v2 v2.1.15
-	golang.org/x/crypto v0.58.0
+	github.com/yuin/goldmark/v2 v2.1.16
+	golang.org/x/crypto v0.59.0
 )
 
 require (
@@ -70,5 +70,5 @@ require (
 	go.opentelemetry.io/otel/trace v1.47.0 // indirect
 	go.yaml.in/yaml/v3 v3.0.5 // indirect
 	golang.org/x/mod v0.33.0 // indirect
-	golang.org/x/sys v0.49.0 // indirect
+	golang.org/x/sys v0.50.0 // indirect
 )
